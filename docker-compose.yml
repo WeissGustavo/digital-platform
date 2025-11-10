@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: santander_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: santander_digital
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d santander_digital"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - santander-network
+
+  app:
+    build: .
+    container_name: digital-platform-app
+    image: digital-platform-app
+    restart: on-failure
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ~/.m2:/root/.m2
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/santander_digital
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    ports:
+      - "8080:8080"
+      - "5005:5005" # Debug port
+    networks:
+      - santander-network
+      
+volumes:
+  postgres_data:
+
+networks:
+  santander-network:

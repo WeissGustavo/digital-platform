@@ -1,0 +1,23 @@
+<actions>
+    <action>
+        <actionName>run</actionName>
+        <goals>
+            <goal>exec:exec</goal>
+        </goals>
+        <properties>
+            <exec.executable>docker-compose</exec.executable>
+            <exec.args>up --build</exec.args>
+        </properties>
+    </action>
+
+    <action>
+        <actionName>debug</actionName>
+        <goals>
+            <goal>exec:exec</goal>
+        </goals>
+        <properties>
+            <exec.executable>docker-compose</exec.executable>
+            <exec.args>up --build</exec.args>
+        </properties>
+    </action>
+</actions>
